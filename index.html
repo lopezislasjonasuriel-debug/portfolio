@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jonás</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: transparent;
+      color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container { max-width: 680px; width: 100%; }
+    .typed-text { font-size: clamp(20px, 3.5vw, 28px); font-weight: 400; line-height: 1.75; min-height: 6rem; }
+    .cursor {
+      display: inline-block; width: 2px; height: 1em;
+      background: #1a1a1a; vertical-align: middle; margin-left: 2px;
+      animation: blink 0.75s step-end infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="typed-text" id="typed-text"></p>
+  </div>
+  <script>
+    const fullText = "Hola, mi nombre es Jonás, actualmente soy un estudiante de preparatoria pero tengo bases sólidas en la edición de video, imágenes, y creaciones de gráficos o animaciones.";
+    const highlights = [
+      { word: "Jonás",                  color: "#5b8af5" },
+      { word: "edición de video",       color: "#29b87a" },
+      { word: "imágenes",               color: "#e8962a" },
+      { word: "gráficos o animaciones", color: "#c94fa8" },
+    ];
+    const el = document.getElementById("typed-text");
+    const cursor = document.createElement("span");
+    cursor.className = "cursor";
+    function renderWithHighlights(text) {
+      let html = "", idx = 0;
+      while (idx < text.length) {
+        let matched = false;
+        for (const { word, color } of highlights) {
+          if (text.startsWith(word, idx)) {
+            html += `<span style="color:${color};font-weight:500">${word}</span>`;
+            idx += word.length; matched = true; break;
+          }
+        }
+        if (!matched) {
+          const c = text[idx];
+          html += c === "<" ? "&lt;" : c === ">" ? "&gt;" : c === "&" ? "&amp;" : c;
+          idx++;
+        }
+      }
+      return html;
+    }
+    let i = 0;
+    function type() {
+      if (i <= fullText.length) {
+        el.innerHTML = renderWithHighlights(fullText.slice(0, i));
+        el.appendChild(cursor); i++;
+        const delay = Math.random() < 0.1 ? 80 + Math.random() * 60 : 28 + Math.random() * 22;
+        setTimeout(type, delay);
+      } else { setTimeout(() => cursor.remove(), 1200); }
+    }
+    setTimeout(type, 400);
+  </script>
+</body>
+</html>
