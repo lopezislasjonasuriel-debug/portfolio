@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jonás López Islas — Portfolio</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,167 +15,468 @@
       overflow-x: hidden;
     }
 
-    /* NAV */
+    /* ── NAVBAR ── */
     nav {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       padding: 22px 60px;
       background: #fff;
       border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      opacity: 0;
+      animation: fadeDown 0.6s ease forwards;
+      animation-delay: 0.1s;
     }
-
     .nav-links { display: flex; gap: 32px; }
-    .nav-links a { text-decoration: none; color: #888; }
-    .nav-links a:hover { color: #000; }
-
-    .nav-right { display: flex; gap: 20px; align-items: center; }
-
-    /* HERO */
-    .hero {
-      text-align: center;
-      padding: 60px;
-      background: #fff;
+    .nav-links a {
+      text-decoration: none; color: #888;
+      font-size: 15px; font-weight: 500;
+      transition: color 0.2s;
     }
+    .nav-links a.active, .nav-links a:hover { color: #1a1a1a; }
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .nav-name { font-weight: 700; font-size: 16px; color: #1a1a1a; }
+    .nav-icons { display: flex; gap: 10px; }
+    .nav-icons a {
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: #1a1a1a; color: #fff; font-size: 14px;
+      text-decoration: none; transition: background 0.2s, transform 0.2s;
+    }
+    .nav-icons a:hover { background: #c0392b; transform: scale(1.1); }
 
+    /* ── HERO ── */
+    .hero {
+      display: flex; flex-direction: column;
+      align-items: center; padding: 60px 60px 0;
+      text-align: center; background: #fff;
+    }
+    .hero-location {
+      font-family: Tahoma, Geneva, sans-serif;
+      font-size: 11px; letter-spacing: 3px; color: #888;
+      text-transform: uppercase; margin-bottom: 4px;
+      opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.3s;
+    }
+    .hero-email {
+      font-family: Tahoma, Geneva, sans-serif;
+      font-size: 11px; letter-spacing: 2px; color: #bbb;
+      text-transform: uppercase; margin-bottom: 24px;
+      opacity: 0; animation: fadeUp 0.5s ease forwards; animation-delay: 0.45s;
+    }
     .hero-name {
       font-size: clamp(64px, 10vw, 120px);
-      font-weight: 900;
+      font-weight: 900; color: #1a1a1a;
+      line-height: 0.95; text-transform: uppercase; letter-spacing: -2px;
       margin-bottom: 40px;
+      opacity: 0; animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) forwards; animation-delay: 0.6s;
     }
 
-    /* CARDS */
+    /* ── CARDS ── */
     .cards-wrapper {
-      width: 100%;
-      max-width: 700px;
-      height: 260px;
-      position: relative;
-      margin: auto;
+      width: 100%; max-width: 700px; height: 260px;
+      position: relative; margin-bottom: 0;
+      opacity: 0; animation: fadeUp 0.7s ease forwards; animation-delay: 0.9s;
     }
-
     .card {
-      position: absolute;
-      width: 180px;
-      height: 180px; /* CUADRADAS */
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.13);
-      cursor: grab;
-    }
-
-    .card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
+  position: absolute;
+  width: 180px;
+  height: 180px; /* ← ahora es cuadrado */
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+  cursor: grab;
+  user-select: none;
+  will-change: transform;
+}
     .card.is-dragging {
       cursor: grabbing;
-      transform: scale(1.05);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.28);
+      z-index: 50 !important;
+    }
+    .card img {
+      width: 100%; height: 100%;
+      object-fit: cover; pointer-events: none; display: block;
     }
 
-    /* OVERLAY */
+    /* ── OVERLAY ── */
     .overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); z-index: 999;
+      align-items: center; justify-content: center;
+      backdrop-filter: blur(6px);
     }
-
     .overlay.active { display: flex; }
-
-    .overlay img {
-      max-width: 80%;
-      border-radius: 12px;
+    .overlay-img {
+      max-width: 80vw; max-height: 80vh;
+      border-radius: 18px; box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      animation: popIn 0.35s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.7) rotate(-4deg); }
+      to   { opacity: 1; transform: scale(1) rotate(0deg); }
     }
 
+    /* ── SKILLS ── */
+    .skills-text {
+      font-size: clamp(36px, 6vw, 80px);
+      font-weight: 900; color: #ddd;
+      text-transform: uppercase; letter-spacing: -1px; line-height: 1.05;
+      text-align: center; padding: 40px 60px 20px; background: #fff;
+      opacity: 0; animation: fadeUp 0.7s ease forwards; animation-delay: 1.2s;
+    }
+
+    /* ── BIO ── */
+    .bio-section {
+      background: #fff; text-align: center; padding: 10px 60px 60px;
+      opacity: 0; animation: fadeUp 0.6s ease forwards; animation-delay: 1.4s;
+    }
+    .bio-section p {
+      font-family: Tahoma, Geneva, sans-serif;
+      font-size: 15px; color: #888;
+      max-width: 600px; margin: 0 auto; line-height: 1.8;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
-
 <body>
 
-<nav>
-  <div class="nav-links">
-    <a href="#">Home</a>
-    <a href="#">About</a>
-    <a href="#">Work</a>
+  <nav>
+    <div class="nav-links">
+      <a href="home.html" class="active">Home</a>
+      <a href="about.html">About</a>
+      <a href="work.html">Work</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-name">Jonás López Islas</span>
+      <div class="nav-icons">
+        <a href="https://www.instagram.com/tu_usuario" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/@tu_canal" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="mailto:tucorreo@gmail.com"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <p class="hero-location">Hermosillo, Sonora</p>
+    <p class="hero-email">lopezislasjonasuriel@gmail.com</p>
+    <h1 class="hero-name">Jonás López</h1>
+
+    <div class="cards-wrapper" id="cardsWrapper">
+      <div class="card" id="card0"><img src="img/trabajo1.jpg" alt="Trabajo 1"/></div>
+      <div class="card" id="card1"><img src="img/trabajo2.jpg" alt="Trabajo 2"/></div>
+      <div class="card" id="card2"><img src="img/trabajo3.jpg" alt="Trabajo 3"/></div>
+      <div class="card" id="card3"><img src="img/trabajo4.jpg" alt="Trabajo 4"/></div>
+    </div>
+  </section>
+
+  <div class="skills-text">Illustrator, Designer<br>& Animator</div>
+
+  <div class="bio-section">
+    <p>Hola, mi nombre es Jonás, actualmente soy un estudiante de preparatoria pero tengo bases sólidas en la
+      <span style="color:#c0392b">edición de video</span>,
+      <span style="color:#c0392b">imágenes</span>, y creaciones de
+      <span style="color:#c0392b">gráficos o animaciones</span>.
+    </p>
   </div>
 
-  <div class="nav-right">
-    <span>Jonás López</span>
+  <div class="overlay" id="overlay">
+    <img class="overlay-img" id="overlayImg" src="" alt="Vista expandida"/>
   </div>
-</nav>
-
-<section class="hero">
-  <h1 class="hero-name">Jonás López</h1>
-
-  <div class="cards-wrapper" id="cardsWrapper">
-    <div class="card"><img></div>
-    <div class="card"><img></div>
-    <div class="card"><img></div>
-    <div class="card"><img></div>
-  </div>
-</section>
-
-<div class="overlay" id="overlay">
-  <img id="overlayImg">
-</div>
 
 <script>
-
-// POSICIONES BASE
+// ─────────────────────────────────────────────
+//  CONFIG
+// ─────────────────────────────────────────────
 const BASE = [
-  { left: 50, top: 20, rot: -8 },
-  { left: 180, top: 5, rot: -3 },
-  { left: 315, top: 5, rot: 3 },
-  { left: 445, top: 20, rot: 8 },
+  { left: 50,  top: 20, rot: -8, z: 1 },
+  { left: 180, top: 5,  rot: -3, z: 2 },
+  { left: 315, top: 5,  rot:  3, z: 3 },
+  { left: 445, top: 20, rot:  8, z: 2 },
 ];
 
-// IMÁGENES DISPONIBLES
-const imagePool = [
-  "img/foto1.png",
-  "img/foto2.png",
-  "img/foto3.png",
-  "img/foto4.png",
-  "img/foto5.png",
-  "img/foto6.png",
-  "img/foto7.png",
-];
+const CARD_W = 170, CARD_H = 220;
+const SPRING  = 0.12;   // fuerza del resorte hacia home
+const DAMPING = 0.72;   // amortiguación (< 1 = rebote suave)
+const TILT_K  = 0.9;    // cuánto inclina la velocidad del mouse
+const PUSH_K  = 0.38;   // cuánta inercia empuja a las vecinas
+const PUSH_DECAY = 0.80;// fricción del empuje en vecinas
 
-// MEZCLAR
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
+// ─────────────────────────────────────────────
+//  ESTADO
+// ─────────────────────────────────────────────
+const cards = Array.from(document.querySelectorAll('.card'));
+const overlay    = document.getElementById('overlay');
+const overlayImg = document.getElementById('overlayImg');
+const wrapper    = document.getElementById('cardsWrapper');
 
-shuffle(imagePool);
+const S = cards.map((card, i) => ({
+  // posición actual
+  x: BASE[i].left, y: BASE[i].top,
+  // velocidad
+  vx: 0, vy: 0,
+  // rotación actual y velocidad de rot
+  rot: BASE[i].rot, vrot: 0,
+  // tilt visual extra (inclinación por velocidad mouse)
+  tilt: 0,
+  // empuje externo recibido de otra carta
+  pushX: 0, pushY: 0,
+  dragging: false,
+  raf: null,
+}));
 
-const cards = document.querySelectorAll(".card");
+let dragIdx   = -1;
+let dragOffX  = 0, dragOffY = 0;
+let mouseVX   = 0, mouseVY  = 0;
+let lastMX    = 0, lastMY   = 0;
+let startMX   = 0, startMY  = 0;
+let hasMoved  = false;
 
-// ASIGNAR IMÁGENES SIN REPETIR
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
 cards.forEach((card, i) => {
-  const img = card.querySelector("img");
-  img.src = imagePool[i];
+  applyTransform(i);
+  card.style.zIndex = BASE[i].z;
 
-  card.style.left = BASE[i].left + "px";
-  card.style.top = BASE[i].top + "px";
-  card.style.transform = `rotate(${BASE[i].rot}deg)`;
+  card.addEventListener('mousedown', e => {
+    dragIdx  = i;
+    hasMoved = false;
+    startMX  = e.clientX;
+    startMY  = e.clientY;
+    lastMX   = e.clientX;
+    lastMY   = e.clientY;
+    mouseVX  = 0; mouseVY = 0;
 
-  // CLICK → EXPANDIR
-  card.addEventListener("click", () => {
-    document.getElementById("overlay").classList.add("active");
-    document.getElementById("overlayImg").src = img.src;
+    const rect = card.getBoundingClientRect();
+    dragOffX = e.clientX - rect.left;
+    dragOffY = e.clientY - rect.top;
+
+    S[i].dragging = true;
+    S[i].vx = 0; S[i].vy = 0; S[i].vrot = 0;
+
+    card.classList.add('is-dragging');
+    card.style.zIndex = 60;
+
+    // Iniciar loop de física
+    cancelAnimationFrame(S[i].raf);
+    S[i].raf = requestAnimationFrame(() => physicsDrag(i));
+
+    e.preventDefault();
   });
 });
 
-// CERRAR OVERLAY
-document.getElementById("overlay").addEventListener("click", () => {
-  document.getElementById("overlay").classList.remove("active");
+// ─────────────────────────────────────────────
+//  MOUSE MOVE
+// ─────────────────────────────────────────────
+document.addEventListener('mousemove', e => {
+  if (dragIdx < 0) return;
+
+  if (Math.abs(e.clientX - startMX) > 5 || Math.abs(e.clientY - startMY) > 5)
+    hasMoved = true;
+
+  mouseVX = e.clientX - lastMX;
+  mouseVY = e.clientY - lastMY;
+  lastMX  = e.clientX;
+  lastMY  = e.clientY;
+
+  const wRect = wrapper.getBoundingClientRect();
+  S[dragIdx].x = e.clientX - wRect.left - dragOffX;
+  S[dragIdx].y = e.clientY - wRect.top  - dragOffY;
+  S[dragIdx].tilt = -mouseVX * TILT_K;  // inclinación opuesta a la dirección
 });
 
+// ─────────────────────────────────────────────
+//  MOUSE UP
+// ─────────────────────────────────────────────
+document.addEventListener('mouseup', () => {
+  if (dragIdx < 0) return;
+  const i = dragIdx;
+  dragIdx = -1;
+
+  cards[i].classList.remove('is-dragging');
+  cards[i].style.zIndex = 60;
+
+  if (!hasMoved) {
+    // Clic simple → expandir
+    S[i].dragging = false;
+    S[i].tilt = 0;
+    overlayImg.src = cards[i].querySelector('img').src;
+    overlay.classList.add('active');
+    snapHome(i);
+    return;
+  }
+
+  // Velocidad de lanzamiento = velocidad del mouse al soltar
+  S[i].vx   = mouseVX * 1.4;
+  S[i].vy   = mouseVY * 1.4;
+  S[i].vrot = mouseVX * 0.5;
+  S[i].dragging = false;
+
+  // Empujar a las otras cartas con la inercia
+  const speed = Math.sqrt(mouseVX**2 + mouseVY**2);
+  cards.forEach((_, j) => {
+    if (j === i) return;
+    // dirección desde la carta lanzada hacia la vecina
+    const dx = BASE[j].left - BASE[i].left;
+    const dy = BASE[j].top  - BASE[i].top;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    const proximity = Math.max(0, 1 - dist / 500); // más cerca = más empuje
+    const strength = speed * PUSH_K * (0.6 + proximity * 0.8);
+    S[j].pushX += (dx / dist) * strength;
+    S[j].pushY += (dy / dist) * strength + -mouseVY * 0.2;
+  });
+
+  snapHome(i);
+});
+
+// ─────────────────────────────────────────────
+//  FÍSICA DURANTE DRAG (solo actualiza transform visualmente)
+// ─────────────────────────────────────────────
+function physicsDrag(i) {
+  if (!S[i].dragging) return;
+  applyTransform(i);
+  S[i].raf = requestAnimationFrame(() => physicsDrag(i));
+}
+
+// ─────────────────────────────────────────────
+//  SNAP HOME — resorte hacia posición base
+// ─────────────────────────────────────────────
+function snapHome(i) {
+  cancelAnimationFrame(S[i].raf);
+
+  function step() {
+    if (S[i].dragging) return;
+
+    const tx = BASE[i].left - S[i].x;
+    const ty = BASE[i].top  - S[i].y;
+
+    // Resorte
+    S[i].vx = (S[i].vx + tx * SPRING) * DAMPING;
+    S[i].vy = (S[i].vy + ty * SPRING) * DAMPING;
+
+    S[i].x += S[i].vx;
+    S[i].y += S[i].vy;
+
+    // Rotación vuelve a base con resorte
+    const trotTarget = BASE[i].rot - S[i].rot;
+    S[i].vrot = (S[i].vrot + trotTarget * 0.1) * 0.75;
+    S[i].rot += S[i].vrot;
+
+    // Tilt desvanece
+    S[i].tilt *= 0.82;
+
+    applyTransform(i);
+
+    const settled =
+      Math.abs(S[i].vx)   < 0.05 &&
+      Math.abs(S[i].vy)   < 0.05 &&
+      Math.abs(S[i].vrot) < 0.05 &&
+      Math.abs(tx) < 0.3  &&
+      Math.abs(ty) < 0.3;
+
+    if (settled) {
+      S[i].x = BASE[i].left;
+      S[i].y = BASE[i].top;
+      S[i].rot  = BASE[i].rot;
+      S[i].tilt = 0;
+      applyTransform(i);
+      cards[i].style.zIndex = BASE[i].z;
+      return;
+    }
+
+    S[i].raf = requestAnimationFrame(step);
+  }
+
+  S[i].raf = requestAnimationFrame(step);
+
+  // También animar empuje en vecinas
+  cards.forEach((_, j) => {
+    if (j === i) return;
+    if (Math.abs(S[j].pushX) > 0.1 || Math.abs(S[j].pushY) > 0.1)
+      animatePush(j);
+  });
+}
+
+// ─────────────────────────────────────────────
+//  ANIMAR EMPUJE EN CARTA VECINA
+// ─────────────────────────────────────────────
+function animatePush(j) {
+  cancelAnimationFrame(S[j].raf);
+
+  function step() {
+    if (S[j].dragging) return;
+
+    // Aplicar empuje externo
+    S[j].vx += S[j].pushX;
+    S[j].vy += S[j].pushY;
+    S[j].pushX *= PUSH_DECAY;
+    S[j].pushY *= PUSH_DECAY;
+
+    // Resorte de vuelta a home
+    const tx = BASE[j].left - S[j].x;
+    const ty = BASE[j].top  - S[j].y;
+    S[j].vx = (S[j].vx + tx * SPRING * 0.7) * DAMPING;
+    S[j].vy = (S[j].vy + ty * SPRING * 0.7) * DAMPING;
+
+    S[j].x += S[j].vx;
+    S[j].y += S[j].vy;
+
+    // Rotación oscila ligeramente con el empuje
+    const pushTilt = S[j].vx * 0.6;
+    const trotTarget = BASE[j].rot + pushTilt - S[j].rot;
+    S[j].vrot = (S[j].vrot + trotTarget * 0.12) * 0.78;
+    S[j].rot += S[j].vrot;
+
+    applyTransform(j);
+
+    const settled =
+      Math.abs(S[j].vx) < 0.05 && Math.abs(S[j].vy) < 0.05 &&
+      Math.abs(S[j].pushX) < 0.05 && Math.abs(S[j].pushY) < 0.05;
+
+    if (settled) {
+      S[j].x = BASE[j].left; S[j].y = BASE[j].top;
+      S[j].rot = BASE[j].rot; S[j].vx = 0; S[j].vy = 0;
+      S[j].pushX = 0; S[j].pushY = 0;
+      applyTransform(j);
+      return;
+    }
+
+    S[j].raf = requestAnimationFrame(step);
+  }
+
+  S[j].raf = requestAnimationFrame(step);
+}
+
+// ─────────────────────────────────────────────
+//  APPLY TRANSFORM
+// ─────────────────────────────────────────────
+function applyTransform(i) {
+  cards[i].style.left = S[i].x + 'px';
+  cards[i].style.top  = S[i].y + 'px';
+  const totalRot = S[i].rot + S[i].tilt;
+  const scale = S[i].dragging ? 1.06 : 1;
+  cards[i].style.transform = `rotate(${totalRot}deg) scale(${scale})`;
+}
+
+// ─────────────────────────────────────────────
+//  OVERLAY
+// ─────────────────────────────────────────────
+overlay.addEventListener('click', () => {
+  overlay.classList.remove('active');
+  overlayImg.src = '';
+});
 </script>
 
 </body>
